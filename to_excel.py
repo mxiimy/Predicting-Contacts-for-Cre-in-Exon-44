@@ -17,15 +17,15 @@ def convert_csv_to_excel(csv_file, excel_file):
         print(f"Error reading CSV file: {e}")
         return
 
-    # Write the DataFrame to an Excel file
-    print(f"Writing data to '{excel_file}'...")
     try:
         df.to_excel(excel_file, index=False)
-        print("Conversion complete!")
     except Exception as e:
         print(f"Error writing Excel file: {e}")
 
 if __name__ == "__main__":
-    csv_input_file = "recombinase_contacts.csv"
-    excel_output_file = "recombinase_contacts.xlsx"
+    csv_input_file = "recombinase_total_contacts.csv"
+    excel_output_file = "recombinase_total_contacts.xlsx"
+    convert_csv_to_excel(csv_input_file, excel_output_file)
+    csv_input_file = "recombinase_unique_contacts.csv"
+    excel_output_file = "recombinase_unique_contacts.xlsx"
     convert_csv_to_excel(csv_input_file, excel_output_file)

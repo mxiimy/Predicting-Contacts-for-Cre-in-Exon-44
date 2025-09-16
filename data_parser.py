@@ -5,7 +5,6 @@ import pandas as pd
 from Bio.PDB import PDBParser, NeighborSearch
 from Bio.PDB.PDBExceptions import PDBConstructionWarning
 
-# --- Configuration ---
 # List of PDB IDs for recombinase/integrase complexes
 PDB_IDS = ["1PVR", "1CRE", "1CRX", "1FLR", "1FU7", "2BRX", "5YV1", "1P71", "1D4Y", "2RCK"]
 
@@ -71,10 +70,12 @@ def parse_contacts(pdb_path):
                         dna_atoms.append(atom)
 
     if not dna_atoms:
-        return []
+        return [[], []]
     
     ns = NeighborSearch(dna_atoms)
     unique_contacts = set()
+    total_contacts = []
+
 
     for p_atom in protein_atoms:
         protein_residue = p_atom.get_parent()
@@ -88,10 +89,7 @@ def parse_contacts(pdb_path):
                 f"{protein_residue.get_resname()}{protein_residue.get_id()[1]}-"
                 f"{dna_residue.get_resname()}{dna_residue.get_id()[1]}"
             )
-            
-            if contact_key not in unique_contacts:
-                unique_contacts.add(contact_key)
-                contact_data = {
+            contact_data = {
                     "contact_key": contact_key,
                     "pdb_id": os.path.basename(pdb_path).split('.')[0].upper(),
                     "protein_chain": protein_residue.get_parent().get_id(),
@@ -102,9 +100,13 @@ def parse_contacts(pdb_path):
                     "dna_base_index": dna_residue.get_id()[1],
                     "is_contact": True
                 }
+            
+            if contact_key not in unique_contacts:
+                unique_contacts.add(contact_key)
                 contacts.append(contact_data)
+            total_contacts.append(contact_data)
                 
-    return contacts
+    return [contacts, total_contacts]
 
 def main():
     """
@@ -117,33 +119,59 @@ def main():
 
     # Parse the downloaded files to find contacts
     all_contacts = []
-    print("\n--- Starting Contact Parsing ---")
+    print("\n--- Starting Parsing Unique Contacts ---")
     for pdb_id in PDB_IDS:
         file_path = os.path.join(PDB_DIR, f"{pdb_id.lower()}.pdb")
         if os.path.exists(file_path):
             print(f"Parsing {pdb_id}...")
-            contacts = parse_contacts(file_path)
+            contacts = parse_contacts(file_path)[0]  # Get only unique contacts
             all_contacts.extend(contacts)
             print(f"  Found {len(contacts)} contacts for {pdb_id}.")
         else:
             print(f"File for {pdb_id} not found. Skipping.")
-            
+
+    print(f"\n--- Starting Parsing Total Contacts ---")   
+    total_contacts = []
+    for pdb_id in PDB_IDS:
+        file_path = os.path.join(PDB_DIR, f"{pdb_id.lower()}.pdb")
+        if os.path.exists(file_path):
+            print(f"Parsing {pdb_id}...")
+            contacts = parse_contacts(file_path)[1]  # Get total contacts
+            total_contacts.extend(contacts)
+            print(f"  Found {len(contacts)} contacts for {pdb_id}.")
+        else:
+            print(f"File for {pdb_id} not found. Skipping.")     
+
     # Convert to DataFrame and save to CSV
     if all_contacts:
         df = pd.DataFrame(all_contacts)
         # Drop the temporary contact key column
         df = df.drop(columns=['contact_key'])
         
-        csv_file = "recombinase_contacts.csv"
+        csv_file = "recombinase_unique_contacts.csv"
         df.to_csv(csv_file, index=False)
         
-        print("\n--- Summary ---")
+        print("\n--- Summary for unique contacts ---")
         print(f"Total unique residue-DNA contacts found: {len(df)}")
         print(f"All contacts saved to {csv_file}")
         print("\nDataFrame preview:")
         print(df.head())
     else:
-        print("No contacts were found.")
+        print("No contacts were found for unique residues.")
+
+    if total_contacts:
+        df_total = pd.DataFrame(total_contacts)
+        # Drop the temporary contact key column
+        df_total = df_total.drop(columns=['contact_key'])
+        
+        csv_file = "recombinase_total_contacts.csv"
+        df_total.to_csv(csv_file, index=False)
+        
+        print("\n--- Summary for Total Contacts ---")
+        print(f"Total residue-DNA contacts found (including repeats): {len(df_total)}")
+        print(f"All total contacts saved to {csv_file}")
+        print("\nDataFrame preview:")
+        print(df_total.head())
 
 if __name__ == "__main__":
     main()
