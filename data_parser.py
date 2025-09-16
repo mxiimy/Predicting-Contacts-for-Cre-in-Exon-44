@@ -6,7 +6,7 @@ from Bio.PDB import PDBParser, NeighborSearch
 from Bio.PDB.PDBExceptions import PDBConstructionWarning
 
 # List of PDB IDs for recombinase/integrase complexes
-PDB_IDS = ["1PVR", "1CRE", "1CRX", "1FLR", "1FU7", "2BRX", "5YV1", "1P71", "1D4Y", "2RCK"]
+PDB_IDS = ["1PVR", "1KBU", "1PVP", "1PVQ", "1XNS", "1XO0", "2HOF", "3C28", "3C29", "3MGV", "5CRX", "7RHX", "7RHY", "7RHZ","1CRX", "5YV1", "1P71"]
 
 CONTACT_THRESHOLD = 5.0 # in Angstroms
 
