@@ -29,3 +29,6 @@ if __name__ == "__main__":
     csv_input_file = "recombinase_unique_contacts.csv"
     excel_output_file = "recombinase_unique_contacts.xlsx"
     convert_csv_to_excel(csv_input_file, excel_output_file)
+    csv_input_file = "recombinase_summary.csv"
+    excel_output_file = "recombinase_summary.xlsx"
+    convert_csv_to_excel(csv_input_file, excel_output_file)
