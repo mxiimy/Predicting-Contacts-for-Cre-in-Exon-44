@@ -97,7 +97,9 @@ def find_lox_sites(pdb_id):
                     full_lox_sites.append({
                         "pdb_id": pdb_id,
                         "lox site start 1": part1["start_residue"],
+                        "chain 1": part1["chain_id"],
                         "lox site start 2": part2["start_residue"],
+                        "chain 2": part2["chain_id"],
                         "same_chain": True,
                         "distance between": distance
                     })
@@ -107,7 +109,9 @@ def find_lox_sites(pdb_id):
                 full_lox_sites.append({
                     "pdb_id": pdb_id,
                     "lox site start 1": part1["start_residue"],
+                    "chain 1": part1["chain_id"],
                     "lox site start 2": part2["start_residue"],
+                    "chain 2": part2["chain_id"],
                     "same_chain": False,
                     "distance between": None
                 })
