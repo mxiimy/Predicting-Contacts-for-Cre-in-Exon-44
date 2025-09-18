@@ -93,13 +93,13 @@ def find_lox_sites(pdb_id):
 
             if same_chain:
                 distance = part2["start_residue"] - (part1["start_residue"] + len(LOXP_PART1_SEQ))
-                if distance == 8:
+                if distance > 0:
                     full_lox_sites.append({
                         "pdb_id": pdb_id,
                         "lox site start 1": part1["start_residue"],
                         "lox site start 2": part2["start_residue"],
                         "same_chain": True,
-                        "distance between": 8
+                        "distance between": distance
                     })
             else:
                 # If on different chains, they are considered a "full" lox site in the recombination intermediate.
