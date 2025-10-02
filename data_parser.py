@@ -89,25 +89,32 @@ def analyze_contacts(pdb_path, lox_sites):
             print(f"Error parsing PDB file {pdb_path}: {e}")
             return [], []
             
-    # Get all protein and DNA atoms in the structure
-    all_protein_atoms = [atom for model in structure for chain in model for residue in chain
-                         if is_protein(residue) for atom in residue]
-    all_dna_atoms = [atom for model in structure for chain in model for residue in chain
-                     if is_dna(residue) for atom in residue]
+    # Collect all protein atoms and DNA atoms from the structure.
+    all_protein_atoms = []
+    all_dna_atoms = []
+    for model in structure:
+        for chain in model:
+            for residue in chain:
+                if is_protein(residue):
+                    all_protein_atoms.extend([atom for atom in residue])
+                elif is_dna(residue):
+                    all_dna_atoms.extend([atom for atom in residue])
     
     if not all_protein_atoms or not all_dna_atoms:
         print(f"Skipping {os.path.basename(pdb_path)}: Missing protein or DNA atoms.")
         return [], []
 
-    # Get only the DNA atoms that are part of the specified Lox sites
     lox_dna_residues = get_lox_residues(structure, lox_sites)
-    lox_dna_atoms = [atom for res in lox_dna_residues for atom in res]
+
+    lox_dna_atoms = []
+    for res in lox_dna_residues:
+        for atom in res:
+            lox_dna_atoms.append(atom)
     
     if not lox_dna_atoms:
-        print(f"No Lox site atoms found in {os.path.basename(pdb_path)}.")
+        print(f"No loxP site atoms found in {os.path.basename(pdb_path)}.")
         return [], []
 
-    # Analyze Protein-DNA contacts, including duplicates
     total_protein_dna_contacts = []
     unique_contact_keys = set()
     dna_search = NeighborSearch(lox_dna_atoms)
@@ -119,7 +126,6 @@ def analyze_contacts(pdb_path, lox_sites):
         for d_atom in nearby_dna_atoms:
             dna_res = d_atom.get_parent()
             
-            # Create a unique key for the contact pair (e.g., ("VAL10", "DA20"))
             contact_key = (
                 f"{protein_res.get_resname()}{protein_res.get_id()[1]}",
                 f"{dna_res.get_resname()}{dna_res.get_id()[1]}"
@@ -136,13 +142,9 @@ def analyze_contacts(pdb_path, lox_sites):
                 "is_contact": True
             }
             
-            # Add to the total list (includes duplicates)
             total_protein_dna_contacts.append(contact_data)
-            
-            # Add to the unique set
             unique_contact_keys.add(contact_key)
 
-    # Filter the total list to get a unique list
     unique_protein_dna_contacts = []
     temp_unique_list = []
     
@@ -166,11 +168,9 @@ def create_detailed_contact_summary(unique_csv, repeat_csv, output_csv):
     - repeat_csv (str): Path to the CSV with non-unique contacts.
     - output_csv (str): Path where the summary CSV will be saved.
     """
-    # Create empty DataFrames to hold the counts
     unique_counts = pd.DataFrame()
     repeat_counts = pd.DataFrame()
 
-    # Process the unique contacts file
     if os.path.exists(unique_csv):
         print(f"Reading unique contacts from '{unique_csv}'...")
         try:
@@ -183,7 +183,6 @@ def create_detailed_contact_summary(unique_csv, repeat_csv, output_csv):
     else:
         print(f"Warning: Unique contacts file '{unique_csv}' not found. Unique contact counts will be 0.")
 
-    # Process the repeat contacts file
     if os.path.exists(repeat_csv):
         print(f"Reading non-unique contacts from '{repeat_csv}'...")
         try:
@@ -196,7 +195,6 @@ def create_detailed_contact_summary(unique_csv, repeat_csv, output_csv):
     else:
         print(f"Warning: Non-unique contacts file '{repeat_csv}' not found. Non-unique contact counts will be 0.")
 
-    # Merge the two count DataFrames based on PDB_id
     if not unique_counts.empty and not repeat_counts.empty:
         summary_df = pd.merge(unique_counts, repeat_counts, on='PDB_id', how='outer')
     elif not unique_counts.empty:
@@ -210,12 +208,9 @@ def create_detailed_contact_summary(unique_csv, repeat_csv, output_csv):
     # Fill any missing counts with 0
     summary_df.fillna(0, inplace=True)
     
-    # Ensure the columns are in the correct order and type
     summary_df = summary_df[['PDB_id', 'number of unique contacts', 'number of nonunique contacts']]
     summary_df['number of unique contacts'] = summary_df['number of unique contacts'].astype(int)
     summary_df['number of nonunique contacts'] = summary_df['number of nonunique contacts'].astype(int)
-
-    # Save the final summary to a new CSV file
     summary_df.to_csv(output_csv, index=False)
     
     print(f"\nDetailed summary saved successfully to '{output_csv}'.")
@@ -253,7 +248,6 @@ def main():
         else:
             print(f"File for {pdb_id} not found. Skipping.")
     
-    # Convert to DataFrames and save to CSV
     if all_protein_dna_contacts_total:
         df_total = pd.DataFrame(all_protein_dna_contacts_total)
         total_csv_file = "recombinase_total_contacts.csv"
@@ -268,7 +262,6 @@ def main():
         print(f"Total unique protein-DNA contacts found: {len(df_unique)}")
         print(f"All unique contacts saved to {unique_csv_file}")
     
-    # Run the new summary function after generating the contact files
     create_detailed_contact_summary(
         unique_csv="recombinase_unique_contacts.csv",
         repeat_csv="recombinase_total_contacts.csv",

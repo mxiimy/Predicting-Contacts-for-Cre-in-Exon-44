@@ -9,31 +9,33 @@ from Bio.PDB.PDBExceptions import PDBConstructionWarning
 # Define the two parts of the loxP sequence
 LOXP_PART1_SEQ = "ATAACTTCGTATA"
 LOXP_PART2_SEQ = "TATACGAAGTTAT"
-PDB_IDS = ["1NZB", "1PVR", "1KBU", "1PVP", "1PVQ", "1XNS", "1XO0", "2HOF", "3C28", "3C29", "3MGV", "5CRX", "7RHX", "7RHY", "7RHZ","1CRX", "5YV1", "1P71"]
+# PDB_IDS = ["1NZB", "1PVR", "1KBU", "1PVP", "1PVQ", "1XNS", "1XO0", "2HOF", "3C28", "3C29", "3MGV", "5CRX", "7RHX", "7RHY", "7RHZ","1CRX"]
+
+PDB_IDS = ["brec1_loxbtr", "fre_loxh", "tre_loxltr", "rechtlv_loxhtlv"]
 
 PDB_DIR = "pdb_files"
 
-def download_pdb_files_direct(pdb_ids, download_dir):
-    """
-    Downloads PDB files directly from the RCSB PDB database using requests.
-    """
-    if not os.path.exists(download_dir):
-        os.makedirs(download_dir)
+# def download_pdb_files_direct(pdb_ids, download_dir):
+#     """
+#     Downloads PDB files directly from the RCSB PDB database using requests.
+#     """
+#     if not os.path.exists(download_dir):
+#         os.makedirs(download_dir)
 
-    for pdb_id in pdb_ids:
-        pdb_id_lower = pdb_id.lower()
-        url = f"https://files.rcsb.org/download/{pdb_id_lower}.pdb"
-        file_path = os.path.join(download_dir, f"{pdb_id_lower}.pdb")
+#     for pdb_id in pdb_ids:
+#         pdb_id_lower = pdb_id.lower()
+#         url = f"https://files.rcsb.org/download/{pdb_id_lower}.pdb"
+#         file_path = os.path.join(download_dir, f"{pdb_id_lower}.pdb")
         
-        print(f"Downloading {pdb_id} from {url}")
+#         print(f"Downloading {pdb_id} from {url}")
         
-        response = requests.get(url)
-        if response.status_code == 200:
-            with open(file_path, 'w') as f:
-                f.write(response.text)
-            print(f"Successfully downloaded {pdb_id}")
-        else:
-            print(f"Failed to download {pdb_id}. Status code: {response.status_code}")
+#         response = requests.get(url)
+#         if response.status_code == 200:
+#             with open(file_path, 'w') as f:
+#                 f.write(response.text)
+#             print(f"Successfully downloaded {pdb_id}")
+#         else:
+#             print(f"Failed to download {pdb_id}. Status code: {response.status_code}")
 
 def is_dna(residue):
     """
@@ -118,8 +120,8 @@ def find_lox_sites(pdb_id):
     return full_lox_sites
 
 if __name__ == "__main__":
-    print("--- Starting PDB Download ---")
-    download_pdb_files_direct(PDB_IDS, PDB_DIR)
+    # print("--- Starting PDB Download ---")
+    # download_pdb_files_direct(PDB_IDS, PDB_DIR)
     
     all_results = []
     print("\n--- Starting Lox Site Analysis ---")
