@@ -2,7 +2,6 @@ import os
 import openprotein
 from openprotein.protein import Protein
 from openprotein.chains import DNA
-from openprotein.chains import Ligand
 from dotenv import load_dotenv 
 
 load_dotenv() 
@@ -69,12 +68,11 @@ if __name__ == "__main__":
     dna_list = []
     # Assume the data is in the form:
     #   - each dna to fold in its own file and are folded as a dimer
-    #   - each file has 2 lines, one per DNA sequence
     for dna in os.listdir("sequences/dnas"):
         file_path = os.path.join("sequences", "dnas", dna)
         with open(file_path, 'r') as file:
             d = []
-            for line in file.readlines(): # There should be only one line but just in case
+            for line in file.readlines():
                 d.append(line.strip()) # Add dna with list of dna to fold and get rid of white space
             dna_list.append(d)
 
