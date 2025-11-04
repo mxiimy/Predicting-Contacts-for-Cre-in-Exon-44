@@ -32,8 +32,7 @@ def fold(name, p_seq, dna_seq):
         proteins=proteins,
         dnas=dnas
     )
-    fold_job
-
+    
     fold_job.wait_until_done(verbose=True)
 
     result = fold_job.get()
