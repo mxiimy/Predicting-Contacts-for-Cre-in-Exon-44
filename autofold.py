@@ -3,6 +3,7 @@ import openprotein
 from openprotein.protein import Protein
 from openprotein.chains import DNA
 from dotenv import load_dotenv 
+from CIF_to_PDB import convert_cif_to_pdb
 
 load_dotenv() 
 
@@ -37,13 +38,20 @@ def fold(name, p_seq, dna_seq):
 
     result = fold_job.get()
 
-    # Ensure the results folder exists
-    os.makedirs("results", exist_ok=True) 
+    # Make sure this folder exists
+    cif_dir = "cif_results"
+    os.makedirs(cif_dir, exist_ok=True) 
+    cif_file_path = os.path.join(cif_dir, name + ".cif")
 
-    file_path = os.path.join("results", name + ".cif")
-
-    with open(file_path, "wb") as f:
+    # Write the intermediate CIF file
+    with open(cif_file_path, "wb") as f:
         f.write(result)
+
+    # Define the final PDB output path
+    pdb_output_path = os.path.join("results", name + ".pdb")
+    
+    # Convert from CIF to PDB and save to results
+    convert_cif_to_pdb(cif_file_path, pdb_output_path)
 
 if __name__ == "__main__":
     # Start a session
