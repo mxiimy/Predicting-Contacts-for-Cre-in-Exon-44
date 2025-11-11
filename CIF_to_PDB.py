@@ -54,7 +54,7 @@ def convert_cif_to_pdb(input_file="input_file.cif", output_file="output_file.pdb
 if __name__ == "__main__":
     cif_file = "cif_results/1NZB0.cif"
     base_name = os.path.basename(cif_file).replace(".cif", "")
-    out_file = os.path.join("results", f"{base_name}.pdb")
+    out_file = os.path.join("pdb_files", f"{base_name}.pdb")
     
     try:
         convert_cif_to_pdb(cif_file, out_file)
