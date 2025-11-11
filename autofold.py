@@ -72,6 +72,24 @@ if __name__ == "__main__":
             lines = file.readlines()
             protein_list.append(lines[0].strip()) # Add protein with list of proteins to fold and get rid of white space
     
+    # Clean the DNA first:
+    for dna in os.listdir("sequences/raw_dna"):
+        file_path = os.path.join("sequences", "raw_dna", dna)
+        if dna in os.listdir("sequences/dnas"):
+            continue # Already cleaned
+        else:
+            with open(file_path, 'r') as file:
+                d = []
+                for line in file.readlines():
+                    line = line.upper()
+                    clean = line.replace('U', 'T') # Replace all instances of U with T
+                    d.append(clean.strip()) # Add dna with list of dna and get rid of white space
+            os.makedirs("dnas", exist_ok=True)
+            file_path_w = os.path.join("sequences", "dnas", dna)
+            with open(file_path_w, "w") as f:
+                for i in d:
+                    f.write(i + "\n")
+
     dna_list = []
     # Assume the data is in the form:
     #   - each dna to fold in its own file and are folded as a dimer
