@@ -52,10 +52,16 @@ def convert_cif_to_pdb(input_file="input_file.cif", output_file="output_file.pdb
         print("Please ensure your input file is a valid mmCIF file and Biopython is installed.")
 
 if __name__ == "__main__":
-    cif_file = "cif_results/1NZB0.cif"
+    
+    if len(sys.argv) < 2:
+        print("Error: No input file provided.")
+        print("Usage: python run_conversion.py <path_to_your_cif_file>")
+        sys.exit(1) 
+
+    cif_file = sys.argv[1]
+    
     base_name = os.path.basename(cif_file).replace(".cif", "")
     out_file = os.path.join("pdb_files", f"{base_name}.pdb")
-    
     try:
         convert_cif_to_pdb(cif_file, out_file)
     except Exception as e:
