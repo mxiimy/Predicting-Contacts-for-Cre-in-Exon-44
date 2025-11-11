@@ -7,7 +7,7 @@ from CIF_to_PDB import convert_cif_to_pdb
 
 load_dotenv() 
 
-def fold(name, p_seq, dna_seq):
+def fold(session, name, p_seq, dna_seq):
     proteins = [Protein(sequence=p_seq)]
     proteins[0].chain_id = ["A", "B"]
 
@@ -53,8 +53,8 @@ def fold(name, p_seq, dna_seq):
     # Convert from CIF to PDB and save to results
     convert_cif_to_pdb(cif_file_path, pdb_output_path)
 
-if __name__ == "__main__":
-    # Start a session
+def run_all_folds():
+    """Connects to OpenProtein and runs all folding jobs."""
     user = os.environ.get("OPENPROTEIN_USERNAME")
     pw = os.environ.get("OPENPROTEIN_PASSWORD")
 
@@ -105,4 +105,7 @@ if __name__ == "__main__":
     for name, protein in zip(names, protein_list):
         for j in range(len(dna_list)):
             foldname = name + str(j) # To identify which DNA the protein is folded with
-            fold(foldname, protein, dna_list[j])
+            fold(session, foldname, protein, dna_list[j])
+
+if __name__ == "__main__":
+    run_all_folds()
