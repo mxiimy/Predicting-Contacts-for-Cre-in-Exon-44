@@ -48,7 +48,7 @@ def fold(name, p_seq, dna_seq):
         f.write(result)
 
     # Define the final PDB output path
-    pdb_output_path = os.path.join("results", name + ".pdb")
+    pdb_output_path = os.path.join("pdb_results", name + ".pdb")
     
     # Convert from CIF to PDB and save to results
     convert_cif_to_pdb(cif_file_path, pdb_output_path)
