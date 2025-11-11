@@ -84,7 +84,7 @@ def run_all_folds():
                     line = line.upper()
                     clean = line.replace('U', 'T') # Replace all instances of U with T
                     d.append(clean.strip()) # Add dna with list of dna and get rid of white space
-            os.makedirs("dnas", exist_ok=True)
+            os.makedirs("sequences/dnas", exist_ok=True)
             file_path_w = os.path.join("sequences", "dnas", dna)
             with open(file_path_w, "w") as f:
                 for i in d:
