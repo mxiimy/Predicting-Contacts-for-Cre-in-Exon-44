@@ -286,6 +286,16 @@ def main():
 
     for pdb in os.listdir("pdb_results"):
         pdb_file_path = os.path.join("pdb_results", pdb)
+        base = pdb.split('.')[0]
+        letters_only = ''.join([c for c in base if c.isalpha()])
+        if not letters_only:
+            letters_only = base
+        dna_file_path = os.path.join("sequences", "dnas", letters_only + ".dna")
+        with open(dna_file_path, 'r') as f:
+            TARGET_SEQUENCE = f.readlines()
+        
+        FIRST_13 = TARGET_SEQUENCE[:13]
+        LAST_13 = TARGET_SEQUENCE[-13:]
         with open(pdb_file_path, 'r') as file:
             if not os.path.exists(pdb_file_path):
                 print(f"Error: The file '{pdb_file_path}' was not found.")

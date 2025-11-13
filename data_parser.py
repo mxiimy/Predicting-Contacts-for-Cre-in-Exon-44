@@ -8,9 +8,9 @@ from Bio.PDB.PDBExceptions import PDBConstructionWarning
 CONTACT_THRESHOLD = 5.0
 
 # Only the first 13 and last 13 bases need to match (middle 8 can be anything)
-TARGET_SEQUENCE = "ATAACTTCGTATAATGTATCCTCTATACGAACTTAT"
-FIRST_13 = TARGET_SEQUENCE[:13]  # "ATAACTTCGTATA"
-LAST_13 = TARGET_SEQUENCE[-13:]  # "ATACGAACTTAT"
+# TARGET_SEQUENCE = "ACAGGAGTCTATAAAAGCGTGGAGACAGTTCAGG"
+# FIRST_13 = TARGET_SEQUENCE[:13]  # "ATAACTTCGTATA"
+# LAST_13 = TARGET_SEQUENCE[-13:]  # "ATACGAACTTAT"
 TOTAL_LENGTH = 34  # Total length of the lox site (13 + 8 + 13)
 
 
@@ -286,12 +286,19 @@ def main():
     """
     # Specify PDB file path here
     pdb_file_path = input("Enter the path to your PDB file: ").strip()
+    dna_file_path = input("Enter the target DNA sequence: ").strip()
 
     if not os.path.exists(pdb_file_path):
         print(f"Error: The file '{pdb_file_path}' was not found.")
         return
 
     pdb_id = os.path.basename(pdb_file_path).split('.')[0].upper()
+
+    with open(dna_file_path, 'r') as f:
+        TARGET_SEQUENCE = f.readlines()
+    
+    FIRST_13 = TARGET_SEQUENCE[:13]  # "ATAACTTCGTATA"
+    LAST_13 = TARGET_SEQUENCE[-13:]  # "ATACGAACTTAT"
 
     total_contacts, unique_contacts, match_info = analyze_contacts(pdb_file_path, FIRST_13, LAST_13, TOTAL_LENGTH)
 
