@@ -287,7 +287,8 @@ def main():
     for pdb in os.listdir("pdb_results"):
         pdb_file_path = os.path.join("pdb_results", pdb)
         base = pdb.split('.')[0]
-        letters_only = ''.join([c for c in base if c.isalpha()])
+        # Keep letters, and keep a digit only if it's at index 0
+        letters_only = ''.join([c for i, c in enumerate(base) if c.isalpha() or (c.isdigit() and i == 0)])
         if not letters_only:
             letters_only = base
         dna_file_path = os.path.join("sequences", "dnas", letters_only + ".dna")
