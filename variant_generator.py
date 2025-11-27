@@ -14,7 +14,7 @@ clones = {
     'Fre3': ["S2T", 'N3K', 'L4S', 'I180V'],
     'Fre4': ["G93S", 'S108G', 'E262A'],
     'Fre5': ["N3D", 'L14S', 'G190S', 'I320M'],
-    'Fre6': ["V7L", 'P107L', 'M193V', 'F278G'],
+    'Fre6': ["V7L", 'P107L', 'M193V', 'D278G'],
     'Fre7': ["F239L", 'L284R', 'D343G'],
     'Fre8': ["I88T", 'E262Q'],
     'Fre9': ["N3D", 'V7A', 'F64L', 'Q156R', 'E262A', 'D343E'],
@@ -67,17 +67,13 @@ def main():
     for clone_name, mutations in clones.items():
         file_path = os.path.join("CRE_clones", clone_name)
         try:
-            with open(file_path, "w") as f:
-                clone = generate_variant(CRE, mutations)
-                f.write(clone)
-            print(f">{clone_name}\n{clone}\n")
-            # if clone_name in os.listdir("CRE_clones"):
-            #     continue
-            # else:
-            #     with open(file_path, "w") as f:
-            #         clone = generate_variant(CRE, mutations)
-            #         f.write(clone)
-            #     print(f">{clone_name}\n{clone}\n")
+            if clone_name in os.listdir("CRE_clones"):
+                continue
+            else:
+                with open(file_path, "w") as f:
+                    clone = generate_variant(CRE, mutations)
+                    f.write(clone)
+                print(f">{clone_name}\n{clone}\n")
         except ValueError as e:
             print(f"Error generating variant for {clone_name}: {e}")
 
