@@ -282,65 +282,61 @@ def create_summary(total_contacts, unique_contacts, pdb_id, match_info):
 
 
 def main():
-    autofold.run_all_folds()
+    autofold.run_all_folds() # Comment out this line if structures are already folded
 
     for pdb in os.listdir("pdb_results"):
         pdb_file_path = os.path.join("pdb_results", pdb)
-        base = pdb.split('.')[0]
-        # Keep letters, and keep a digit only if it's at index 0
-        letters_only = ''.join([c for i, c in enumerate(base) if c.isalpha() or (c.isdigit() and i == 0)])
-        if not letters_only:
-            letters_only = base
-        dna_file_path = os.path.join("sequences", "dnas", letters_only + ".dna")
-        with open(dna_file_path, 'r') as f:
-            TARGET_SEQUENCE = f.readlines()
-        
-        FIRST_13 = TARGET_SEQUENCE[:13]
-        LAST_13 = TARGET_SEQUENCE[-13:]
-        with open(pdb_file_path, 'r') as file:
-            if not os.path.exists(pdb_file_path):
-                print(f"Error: The file '{pdb_file_path}' was not found.")
-                return
+        for dna in os.listdir("sequences/dnas"):
+            dna_file_path = os.path.join("sequences", "dnas", dna)
+            with open(dna_file_path, 'r') as f:
+                TARGET_SEQUENCE = f.read().strip()
+            
+            FIRST_13 = TARGET_SEQUENCE[:13]
+            LAST_13 = TARGET_SEQUENCE[-13:]
+            with open(pdb_file_path, 'r') as file:
+                if not os.path.exists(pdb_file_path):
+                    print(f"Error: The file '{pdb_file_path}' was not found.")
+                    return
 
-            pdb_id = os.path.basename(pdb_file_path).split('.')[0].upper()
+                pdb_id = os.path.basename(pdb_file_path).split('.')[0].upper()
 
-            total_contacts, unique_contacts, match_info = analyze_contacts(pdb_file_path, FIRST_13, LAST_13, TOTAL_LENGTH)
+                total_contacts, unique_contacts, match_info = analyze_contacts(pdb_file_path, FIRST_13, LAST_13, TOTAL_LENGTH)
 
-            if not match_info:
-                print("Target DNA sequence not found in the PDB file.")
-                return
+                if not match_info:
+                    print("Target DNA sequence not found in the PDB file.")
+                    break
 
-            if not total_contacts:
-                print("No protein-DNA contacts found in the target sequence region.")
-                return
+                if not total_contacts:
+                    print("No protein-DNA contacts found in the target sequence region.")
+                    break
 
-            print(f"\nFound {len(total_contacts)} total protein-DNA contacts ({len(unique_contacts)} unique).")
+                print(f"\nFound {len(total_contacts)} total protein-DNA contacts ({len(unique_contacts)} unique).")
 
-            os.makedirs("results", exist_ok=True) 
+                os.makedirs("results", exist_ok=True) 
 
-            # Save total contacts
-            if total_contacts:
-                total_contacts_filepath = os.path.join("results", pdb_id + ".csv")
-                df_total = pd.DataFrame(total_contacts)
-                # total_csv_file = f"{pdb_id}_total_contacts.csv"
-                df_total.to_csv(total_contacts_filepath, index=False)
-                print(f"\nAll contacts saved to {total_contacts_filepath}")
+                # Save total contacts
+                if total_contacts:
+                    total_contacts_filepath = os.path.join("results", pdb_id + ".csv")
+                    df_total = pd.DataFrame(total_contacts)
+                    # total_csv_file = f"{pdb_id}_total_contacts.csv"
+                    df_total.to_csv(total_contacts_filepath, index=False)
+                    print(f"\nAll contacts saved to {total_contacts_filepath}")
 
-            # Save unique contacts
-            if unique_contacts:
-                df_unique = pd.DataFrame(unique_contacts)
-                unique_contacts_filepath = os.path.join("results", f"{pdb_id}_unique_contacts.csv")
-                df_unique.to_csv(unique_contacts_filepath, index=False)
-                print(f"Unique contacts saved to {unique_contacts_filepath}")
+                # Save unique contacts
+                if unique_contacts:
+                    df_unique = pd.DataFrame(unique_contacts)
+                    unique_contacts_filepath = os.path.join("results", f"{pdb_id}_unique_contacts.csv")
+                    df_unique.to_csv(unique_contacts_filepath, index=False)
+                    print(f"Unique contacts saved to {unique_contacts_filepath}")
 
-            # Create and save summary
-            summary_df = create_summary(total_contacts, unique_contacts, pdb_id, match_info)
-            summary_csv_file = os.path.join("results", f"{pdb_id}_summary.csv") 
-            summary_df.to_csv(summary_csv_file, index=False)
-            print(f"Summary saved to {summary_csv_file}")
+                # Create and save summary
+                summary_df = create_summary(total_contacts, unique_contacts, pdb_id, match_info)
+                summary_csv_file = os.path.join("results", f"{pdb_id}_summary.csv") 
+                summary_df.to_csv(summary_csv_file, index=False)
+                print(f"Summary saved to {summary_csv_file}")
 
-            print("\nSummary:")
-            print(summary_df.to_string(index=False))
+                print("\nSummary:")
+                print(summary_df.to_string(index=False))
 
 
 if __name__ == "__main__":

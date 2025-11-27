@@ -295,16 +295,12 @@ def main():
     pdb_id = os.path.basename(pdb_file_path).split('.')[0].upper()
 
     with open(dna_file_path, 'r') as f:
-        TARGET_SEQUENCE = f.readlines()
+        TARGET_SEQUENCE = f.read().strip()
     
     FIRST_13 = TARGET_SEQUENCE[:13]  # "ATAACTTCGTATA"
     LAST_13 = TARGET_SEQUENCE[-13:]  # "ATACGAACTTAT"
 
     total_contacts, unique_contacts, match_info = analyze_contacts(pdb_file_path, FIRST_13, LAST_13, TOTAL_LENGTH)
-
-    if not match_info:
-        print("Target DNA sequence not found in the PDB file.")
-        return
 
     if not total_contacts:
         print("No protein-DNA contacts found in the target sequence region.")
